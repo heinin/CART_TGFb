@@ -1,0 +1,151 @@
+---
+title: "Plotting CellChat results for TGFb"
+author: "heinin"
+date: "2024-02-13"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Ligand-receptor analysis focusing on TGFb
+
+### Packages and environment variables
+
+```{r, warning=F, message=F}
+
+suppressPackageStartupMessages({
+  library(cli)
+  library(Seurat)
+  library(SeuratObject)
+  library(SeuratDisk)
+  library(tidyverse)
+  library(tibble)
+  library(ggplot2)
+  library(ggpubr)
+  library(ggrepel)
+  library(workflowr)
+  library(googlesheets4)
+  library(CellChat)})
+
+setwd("/home/hnatri/13384_TGFb/")
+set.seed(9999)
+options(ggrepel.max.overlaps = Inf)
+
+# Colors, themes, cell type markers, and plot functions
+source("/home/hnatri/CART/13384_Tumors/13384_tumor_ms_themes.R")
+source("/home/hnatri/CART/13384_Tumors/SPP1_ms/cellchat_heatmap.R")
+
+```
+
+### Import data
+
+```{r}
+CC_CD3_objects_compare <- readRDS("/scratch/hnatri/CART/immune_stroma_CC_compare_object_CD3_celltypenames.rds")
+CC_CD3_merged_object <- readRDS("/scratch/hnatri/CART/immune_stroma_CC_merged_object_CD3_celltypenames.rds")
+
+CC_response_objects_compare <- readRDS("/scratch/hnatri/CART/immune_stroma_CC_compare_object_response_celltypenames.rds")
+CC_response_merged_object <- readRDS("/scratch/hnatri/CART/immune_stroma_CC_merged_object_response_celltypenames.rds")
+
+CC_response_objects_compare[[1]]@idents <- factor(CC_response_objects_compare[[1]]@idents,
+                              levels = c(paste0("M", seq(1, 11, by = 1)),
+                                         paste0("L", seq(1, 10, by = 1)),
+                                         paste0("F", seq(1, 3, by = 1))))
+
+CC_response_objects_compare[[2]]@idents <- factor(CC_response_objects_compare[[1]]@idents,
+                              levels = c(paste0("M", seq(1, 11, by = 1)),
+                                         paste0("L", seq(1, 10, by = 1)),
+                                         paste0("F", seq(1, 3, by = 1))))
+
+```
+
+### Plotting TGFb signaling between each pair of cell types
+
+```{r}
+
+# Filtering based on pathway name
+CellChatDB <- CellChatDB.human # use CellChatDB.mouse if running on mouse data
+showDatabaseCategory(CellChatDB)
+all_interactions <- CellChatDB$interaction
+
+# Filtering based on a ligand/receptor
+# ligand.symbol
+interactions_keep <- filter(all_interactions,
+                            grepl(paste(c("TGFB1", "TGFB2", "TGFBR1", "TGFBR2",
+                                          "TGFBR3", "SMAD2", "SMAD3", "SMAD4",
+                                          "NR3C1", "PDCD1", "CD274", "IL4R",
+                                          "CTLA4", "TIGIT", "IKZF2"), collapse="|"), ligand.symbol))
+
+#interactions_keep <- filter(all_interactions, grepl(paste(c("TGFb"), collapse="|"), pathway_name))
+
+pairlr_use <- data.frame("interaction_name" = unique(interactions_keep$interaction_name))
+
+pathways.show <- c("TGFb") 
+#par(mfrow = c(1,2), xpd=TRUE)
+#ht <- list()
+#for (i in 1:length(CC_response_objects_compare)) {
+#  ht[[i]] <- netVisual_heatmap(CC_response_objects_compare[[i]],
+#                               signaling = pathways.show,
+#                               color.heatmap = "Reds",
+#                               measure = "count",
+#                               slot.name = "netP",
+#                               cluster.rows = T,
+#                               cluster.cols = T,
+#                               title.name = paste(pathways.show, "signaling ", names(CC_response_objects_compare)[i]))
+#  #color.use = tumor_cluster_col_c[1:13])
+#}
+#
+#ht[[1]] + ht[[2]]
+
+netVisual_heatmap(CC_response_objects_compare[["CR_SD_CC"]],
+                  signaling = c("TGFb"),
+                  color.heatmap = "Reds",
+                  measure = "count",
+                  #cluster.rows = T,
+                  #cluster.cols = T,
+                  title.name = "")
+
+p1 <- netVisual_bubble(CC_response_merged_object,
+                 #sources.use = plot_myeloid,
+                 #targets.use = plot_stroma,
+                 signaling = c("TGFb"),
+                 comparison = c(1, 2),
+                 max.dataset = 2,
+                 thresh = 0.01,
+                 #pairLR.use = pairlr_use, # a df with one column of either "interaction_name" or "pathway_name"
+                 title.name = paste0("Up-regulated signaling in ", names(CC_response_objects_compare)[2]),
+                 angle.x = 45,
+                 remove.isolate = T)
+
+# Plotting pathways of interest in each cell type
+for (i in 1:length(CC_response_objects_compare)) {
+  CC_response_objects_compare[[i]] <- netAnalysis_computeCentrality(CC_response_objects_compare[[i]])
+}
+
+# Combining all the identified signaling pathways from different datasets
+pathway.union <- union(CC_response_objects_compare[[1]]@netP$pathways, CC_response_objects_compare[[2]]@netP$pathways)
+pathway.union <- c("TGFb", "SPP1", "COLLAGEN", "VISFATIN", "CypA", "IL1")
+
+ht1 = netAnalysis_signalingRole_heatmap(CC_response_objects_compare[[1]],
+                                        pattern = "incoming", signaling = pathway.union,
+                                        title = names(CC_response_objects_compare)[1],
+                                        width = 8, height = 3)
+ht2 = netAnalysis_signalingRole_heatmap(CC_response_objects_compare[[2]],
+                                        pattern = "incoming", signaling = pathway.union,
+                                        title = names(CC_response_objects_compare)[2],
+                                        width = 8, height = 3)
+
+draw(ht1 + ht2, ht_gap = unit(0.5, "cm"))
+
+ht1 = netAnalysis_signalingRole_heatmap(CC_response_objects_compare[[1]],
+                                        pattern = "outgoing", signaling = pathway.union,
+                                        title = names(CC_response_objects_compare)[1],
+                                        width = 8, height = 3)
+ht2 = netAnalysis_signalingRole_heatmap(CC_response_objects_compare[[2]],
+                                        pattern = "outgoing", signaling = pathway.union,
+                                        title = names(CC_response_objects_compare)[2],
+                                        width = 8, height = 3)
+
+draw(ht1 + ht2, ht_gap = unit(0.5, "cm"))
+
+```
+

@@ -1,0 +1,154 @@
+---
+title: "Expression of TGFb pathway genes in 13384 tumors"
+author: "heinin"
+date: "2024-02-13"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+### Packages and environment variables
+
+```{r, warning=F, message=F}
+
+suppressPackageStartupMessages({
+  library(cli)
+  library(Seurat)
+  library(SeuratObject)
+  library(SeuratDisk)
+  library(tidyverse)
+  library(tibble)
+  library(ggplot2)
+  library(ggpubr)
+  library(ggrepel)
+  library(workflowr)
+  library(googlesheets4)})
+
+setwd("/home/hnatri/13384_TGFb/")
+set.seed(9999)
+options(ggrepel.max.overlaps = Inf)
+
+# Colors, themes, cell type markers, and plot functions
+source("/home/hnatri/CART/13384_Tumors/13384_tumor_ms_themes.R")
+
+```
+
+### Import data
+
+The two objects contain the whole dataset (including tumor and oligodendrocyte 
+clusters) and the immune compartment + fibroblasts.
+
+```{r}
+
+tumors <- readRDS("/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/tumor_integrated_UPN109pre_noUPN208_soupX_snn_metadata_no4_7.rds")
+immune_fibro <- readRDS("/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/tumor_immune_fibroblast_reclustered.rds")
+
+DefaultAssay(tumors) <- "RNA"
+DefaultAssay(immune_fibro) <- "RNA"
+
+# UMAP with cell type annotations
+DimPlot(tumors,
+        group.by = "celltype",
+        cols = tumor_celltype_col,
+        reduction = "integrated_sct_umap",
+        label = T,
+        label.box = T,
+        label.size = 3,
+        repel = T,
+        raster = T,
+        raster.dpi = c(1024, 1024),
+        pt.size = 3) +
+  ggtitle("") +
+  theme_classic() +
+  manuscript_theme + 
+  NoLegend() +
+  NoAxes() +
+  coord_fixed(1)
+
+DimPlot(immune_fibro,
+        group.by = "celltype",
+        cols = immune_fibro_celltype_col,
+        reduction = "umap",
+        label = T,
+        label.box = T,
+        label.size = 3,
+        repel = T,
+        raster = T,
+        raster.dpi = c(1024, 1024),
+        pt.size = 3) +
+  ggtitle("") +
+  theme_classic() +
+  manuscript_theme + 
+  NoLegend() +
+  NoAxes() +
+  coord_fixed(1)
+
+```
+
+### Feature expression
+
+```{r, fig.height=12}
+plot_genes <- c("TGFB1", "TGFB2", "TGFBR1", "TGFBR2", "TGFBR3", "SMAD2",
+                "SMAD3", "SMAD4", "NR3C1", "PDCD1", "CD274", "IL4R", "CTLA4",
+                "TIGIT", "IKZF2")
+
+intersect(plot_genes, rownames(tumors))
+
+FeaturePlot(tumors,
+            features = plot_genes,
+            ncol = 3,
+            reduction = "integrated_sct_umap",
+            raster = T,
+            cols = c("gray89", "tomato3")) &
+  coord_fixed(ratio = 1) &
+  theme_minimal() &
+  NoLegend() +
+  manuscript_theme
+
+FeaturePlot(immune_fibro,
+            features = plot_genes,
+            ncol = 3,
+            reduction = "umap",
+            raster = T,
+            cols = c("gray89", "tomato3")) &
+  coord_fixed(ratio = 1) &
+  theme_minimal() &
+  NoLegend() +
+  manuscript_theme
+
+```
+
+#### DotPlots
+
+```{r}
+
+DotPlot(immune_fibro,
+        features = plot_genes,
+        group.by = "celltype",
+        cols = c("gray89", "tomato3")) &
+  coord_fixed(ratio = 1) &
+  theme_minimal() &
+  NoLegend() +
+  manuscript_theme +
+  RotatedAxis()
+
+```
+
+
+```{r, fig.width=10, fig.height=20, warning=F, message=F}
+
+VlnPlot(immune_fibro,
+        features = plot_genes[11:15],
+        group.by = "celltype",
+        split.by = "binary_response",
+        ncol = 1,
+        pt.size = 0,
+        cols = c("aquamarine3", "deeppink3")) &
+  theme_minimal() &
+  manuscript_theme +
+  RotatedAxis()
+
+```
+
+
+

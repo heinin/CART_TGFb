@@ -8,4 +8,19 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+# TGFb expression in GBM tumors
+
+This workflowr project contains the single-cell RNA-seq analysis of GBM tumors.
+
+1. [Feature expression across cell types in CR/SD and PD](plot_features.html)\
+2. [Ligand-receptor analysis](plot_cellchat.html)\
+
+
+### To do
+
+- GSEA for gene set signatures\
+- Differential enrichment of gene sets between PD and CR/SD\
+
+### Contact
+
+Contact: hnatri@tgen.org
