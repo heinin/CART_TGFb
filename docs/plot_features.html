@@ -387,9 +387,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 5
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 2
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>13384_TGFb/</code> <span
@@ -412,21 +412,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R
-Markdown file created these results, you’ll want to first commit it to
-the Git repo. If you’re still working on the analysis, you can ignore
-this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -543,13 +540,13 @@ relative
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongf3a76c1">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong3f35b33">
 <span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Repository version:</strong> f3a76c1
+aria-hidden="true"></span> <strong>Repository version:</strong> 3f35b33
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongf3a76c1"
+<div id="strongRepositoryversionstrong3f35b33"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -558,7 +555,7 @@ and connecting the code version to the results is critical for
 reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version f3a76c1.
+The results in this page were generated with repository version 3f35b33.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -572,12 +569,7 @@ depends on. Below is the status of the Git repository when the results
 were generated:
 </p>
 <pre><code>
-Untracked files:
-    Untracked:  analysis/plot_features.Rmd
-
-Unstaged changes:
-    Modified:   analysis/index.Rmd
-
+working directory clean
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not
@@ -591,10 +583,74 @@ have uncommitted changes.
 <hr>
 </div>
 <div id="versions" class="tab-pane fade">
+
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/plot_features.Rmd</code>) and
+HTML (<code>docs/plot_features.html</code>) files. If you’ve configured
+a remote Git repository (see <code>?wflow_git_remote</code>), click on
+the hyperlinks in the table below to view the files as they were in that
+past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+<td>
+Added the first scripts for feature plots and CellChat
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+<td>
+Added the first scripts for feature plots and CellChat
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
@@ -620,44 +676,6 @@ options(ggrepel.max.overlaps = Inf)
 
 # Colors, themes, cell type markers, and plot functions
 source(&quot;/home/hnatri/CART/13384_Tumors/13384_tumor_ms_themes.R&quot;)</code></pre>
-<pre><code>------------------------------------------------------------------------------</code></pre>
-<pre><code>You have loaded plyr after dplyr - this is likely to cause problems.
-If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
-library(plyr); library(dplyr)</code></pre>
-<pre><code>------------------------------------------------------------------------------</code></pre>
-<pre><code>
-Attaching package: &#39;plyr&#39;</code></pre>
-<pre><code>The following object is masked from &#39;package:ggpubr&#39;:
-
-    mutate</code></pre>
-<pre><code>The following objects are masked from &#39;package:dplyr&#39;:
-
-    arrange, count, desc, failwith, id, mutate, rename, summarise,
-    summarize</code></pre>
-<pre><code>The following object is masked from &#39;package:purrr&#39;:
-
-    compact</code></pre>
-<pre><code>========================================
-circlize version 0.4.15
-CRAN page: https://cran.r-project.org/package=circlize
-Github page: https://github.com/jokergoo/circlize
-Documentation: https://jokergoo.github.io/circlize_book/book/
-
-If you use it in published research, please cite:
-Gu, Z. circlize implements and enhances circular visualization
-  in R. Bioinformatics 2014.
-
-This message can be suppressed by:
-  suppressPackageStartupMessages(library(circlize))
-========================================</code></pre>
-<pre><code>✔ Reading from &quot;13384 tumor scRNAseq tables&quot;.</code></pre>
-<pre><code>✔ Range &#39;&#39;Cluster annotations&#39;&#39;.</code></pre>
-<pre><code>✔ Reading from &quot;13384 tumor scRNAseq tables&quot;.</code></pre>
-<pre><code>✔ Range &#39;&#39;Cluster annotations, immune+fibroblast&#39;&#39;.</code></pre>
-<pre><code>✔ Reading from &quot;13384 tumor scRNAseq tables&quot;.</code></pre>
-<pre><code>✔ Range &#39;&#39;Cluster annotations, GBM+mouse&#39;&#39;.</code></pre>
-<pre><code>✔ Reading from &quot;13384 tumor scRNAseq tables&quot;.</code></pre>
-<pre><code>✔ Range &#39;&#39;Cluster annotations, JAK mouse&#39;&#39;.</code></pre>
 </div>
 <div id="import-data" class="section level3">
 <h3>Import data</h3>
@@ -688,6 +706,43 @@ DimPlot(tumors,
   NoAxes() +
   coord_fixed(1)</code></pre>
 <p><img src="figure/plot_features.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
+Past versions of unnamed-chunk-2-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>DimPlot(immune_fibro,
         group.by = &quot;celltype&quot;,
         cols = immune_fibro_celltype_col,
@@ -706,6 +761,43 @@ DimPlot(tumors,
   NoAxes() +
   coord_fixed(1)</code></pre>
 <p><img src="figure/plot_features.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-2">
+Past versions of unnamed-chunk-2-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="feature-expression" class="section level3">
 <h3>Feature expression</h3>
@@ -727,6 +819,43 @@ intersect(plot_genes, rownames(tumors))</code></pre>
   NoLegend() +
   manuscript_theme</code></pre>
 <p><img src="figure/plot_features.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
+Past versions of unnamed-chunk-3-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>FeaturePlot(immune_fibro,
             features = plot_genes,
             ncol = 3,
@@ -738,6 +867,43 @@ intersect(plot_genes, rownames(tumors))</code></pre>
   NoLegend() +
   manuscript_theme</code></pre>
 <p><img src="figure/plot_features.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-2">
+Past versions of unnamed-chunk-3-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="dotplots" class="section level4">
 <h4>DotPlots</h4>
 <pre class="r"><code>DotPlot(immune_fibro,
@@ -750,6 +916,43 @@ intersect(plot_genes, rownames(tumors))</code></pre>
   manuscript_theme +
   RotatedAxis()</code></pre>
 <p><img src="figure/plot_features.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
+Past versions of unnamed-chunk-4-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>VlnPlot(immune_fibro,
         features = plot_genes[11:15],
         group.by = &quot;celltype&quot;,
@@ -761,6 +964,43 @@ intersect(plot_genes, rownames(tumors))</code></pre>
   manuscript_theme +
   RotatedAxis()</code></pre>
 <p><img src="figure/plot_features.Rmd/unnamed-chunk-5-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -794,13 +1034,13 @@ attached base packages:
 
 other attached packages:
  [1] circlize_0.4.15       plyr_1.8.8            RColorBrewer_1.1-3   
- [4] googlesheets4_1.1.0   workflowr_1.7.1       ggrepel_0.9.3        
- [7] ggpubr_0.6.0          lubridate_1.9.2       forcats_1.0.0        
-[10] stringr_1.5.0         dplyr_1.1.2           purrr_1.0.1          
-[13] readr_2.1.4           tidyr_1.3.0           tibble_3.2.1         
-[16] ggplot2_3.4.2         tidyverse_2.0.0       SeuratDisk_0.0.0.9021
-[19] Seurat_5.0.1          SeuratObject_5.0.1    sp_1.6-1             
-[22] cli_3.6.1            
+ [4] googlesheets4_1.1.0   ggrepel_0.9.3         ggpubr_0.6.0         
+ [7] lubridate_1.9.2       forcats_1.0.0         stringr_1.5.0        
+[10] dplyr_1.1.2           purrr_1.0.1           readr_2.1.4          
+[13] tidyr_1.3.0           tibble_3.2.1          ggplot2_3.4.2        
+[16] tidyverse_2.0.0       SeuratDisk_0.0.0.9021 Seurat_5.0.1         
+[19] SeuratObject_5.0.1    sp_1.6-1              cli_3.6.1            
+[22] workflowr_1.7.1      
 
 loaded via a namespace (and not attached):
   [1] RcppAnnoy_0.0.20       splines_4.3.0          later_1.3.1           

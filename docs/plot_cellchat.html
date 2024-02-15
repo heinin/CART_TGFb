@@ -386,9 +386,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 5
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 2
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>13384_TGFb/</code> <span
@@ -411,21 +411,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R
-Markdown file created these results, you’ll want to first commit it to
-the Git repo. If you’re still working on the analysis, you can ignore
-this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -542,13 +539,13 @@ relative
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongf3a76c1">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong3f35b33">
 <span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Repository version:</strong> f3a76c1
+aria-hidden="true"></span> <strong>Repository version:</strong> 3f35b33
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongf3a76c1"
+<div id="strongRepositoryversionstrong3f35b33"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -557,7 +554,7 @@ and connecting the code version to the results is critical for
 reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version f3a76c1.
+The results in this page were generated with repository version 3f35b33.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -571,13 +568,7 @@ depends on. Below is the status of the Git repository when the results
 were generated:
 </p>
 <pre><code>
-Untracked files:
-    Untracked:  analysis/plot_cellchat.Rmd
-    Untracked:  analysis/plot_features.Rmd
-
-Unstaged changes:
-    Modified:   analysis/index.Rmd
-
+working directory clean
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not
@@ -591,10 +582,74 @@ have uncommitted changes.
 <hr>
 </div>
 <div id="versions" class="tab-pane fade">
+
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/plot_cellchat.Rmd</code>) and
+HTML (<code>docs/plot_cellchat.html</code>) files. If you’ve configured
+a remote Git repository (see <code>?wflow_git_remote</code>), click on
+the hyperlinks in the table below to view the files as they were in that
+past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+<td>
+Added the first scripts for feature plots and CellChat
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+<td>
+Added the first scripts for feature plots and CellChat
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
@@ -651,6 +706,43 @@ class="section level3">
 CellChatDB &lt;- CellChatDB.human # use CellChatDB.mouse if running on mouse data
 showDatabaseCategory(CellChatDB)</code></pre>
 <p><img src="figure/plot_cellchat.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
+Past versions of unnamed-chunk-3-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>all_interactions &lt;- CellChatDB$interaction
 
 # Filtering based on a ligand/receptor
@@ -691,6 +783,43 @@ netVisual_heatmap(CC_response_objects_compare[[&quot;CR_SD_CC&quot;]],
                   title.name = &quot;&quot;)</code></pre>
 <pre><code>Do heatmap based on a single object </code></pre>
 <p><img src="figure/plot_cellchat.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-2">
+Past versions of unnamed-chunk-3-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>p1 &lt;- netVisual_bubble(CC_response_merged_object,
                  #sources.use = plot_myeloid,
                  #targets.use = plot_stroma,
@@ -726,6 +855,43 @@ ht2 = netAnalysis_signalingRole_heatmap(CC_response_objects_compare[[2]],
 draw(ht1 + ht2, ht_gap = unit(0.5, &quot;cm&quot;))</code></pre>
 <pre><code>Warning: Heatmap/annotation names are duplicated: Relative strength</code></pre>
 <p><img src="figure/plot_cellchat.Rmd/unnamed-chunk-3-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-3">
+Past versions of unnamed-chunk-3-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ht1 = netAnalysis_signalingRole_heatmap(CC_response_objects_compare[[1]],
                                         pattern = &quot;outgoing&quot;, signaling = pathway.union,
                                         title = names(CC_response_objects_compare)[1],
@@ -738,6 +904,43 @@ ht2 = netAnalysis_signalingRole_heatmap(CC_response_objects_compare[[2]],
 draw(ht1 + ht2, ht_gap = unit(0.5, &quot;cm&quot;))</code></pre>
 <pre><code>Warning: Heatmap/annotation names are duplicated: Relative strength</code></pre>
 <p><img src="figure/plot_cellchat.Rmd/unnamed-chunk-3-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-4">
+Past versions of unnamed-chunk-3-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+3f35b33
+</td>
+<td>
+heinin
+</td>
+<td>
+2024-02-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -774,13 +977,13 @@ other attached packages:
  [1] ComplexHeatmap_2.18.0 circlize_0.4.15       plyr_1.8.8           
  [4] RColorBrewer_1.1-3    CellChat_2.1.1        bigmemory_4.6.1      
  [7] Biobase_2.62.0        BiocGenerics_0.48.1   igraph_1.4.3         
-[10] googlesheets4_1.1.0   workflowr_1.7.1       ggrepel_0.9.3        
-[13] ggpubr_0.6.0          lubridate_1.9.2       forcats_1.0.0        
-[16] stringr_1.5.0         dplyr_1.1.2           purrr_1.0.1          
-[19] readr_2.1.4           tidyr_1.3.0           tibble_3.2.1         
-[22] ggplot2_3.4.2         tidyverse_2.0.0       SeuratDisk_0.0.0.9021
-[25] Seurat_5.0.1          SeuratObject_5.0.1    sp_1.6-1             
-[28] cli_3.6.1            
+[10] googlesheets4_1.1.0   ggrepel_0.9.3         ggpubr_0.6.0         
+[13] lubridate_1.9.2       forcats_1.0.0         stringr_1.5.0        
+[16] dplyr_1.1.2           purrr_1.0.1           readr_2.1.4          
+[19] tidyr_1.3.0           tibble_3.2.1          ggplot2_3.4.2        
+[22] tidyverse_2.0.0       SeuratDisk_0.0.0.9021 Seurat_5.0.1         
+[25] SeuratObject_5.0.1    sp_1.6-1              cli_3.6.1            
+[28] workflowr_1.7.1      
 
 loaded via a namespace (and not attached):
   [1] RcppAnnoy_0.0.20       splines_4.3.0          later_1.3.1           
@@ -831,7 +1034,7 @@ loaded via a namespace (and not attached):
 [136] future.apply_1.11.0    ggsignif_0.6.4         labeling_0.4.2        
 [139] ps_1.7.5               getPass_0.2-4          fs_1.6.2              
 [142] stringi_1.7.12         network_1.18.1         BiocParallel_1.36.0   
-[145] gridBase_0.4-7         viridisLite_0.4.2      deldir_1.0-9          
+[145] viridisLite_0.4.2      deldir_1.0-9           gridBase_0.4-7        
 [148] munsell_0.5.0          lazyeval_0.2.2         spatstat.geom_3.2-1   
 [151] Matrix_1.6-5           RcppHNSW_0.5.0         hms_1.1.3             
 [154] patchwork_1.1.2        bit64_4.0.5            future_1.32.0         
