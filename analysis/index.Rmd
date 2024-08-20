@@ -13,7 +13,8 @@ editor_options:
 This workflowr project contains the single-cell RNA-seq analysis of GBM tumors.
 
 1. [Feature expression across cell types in CR/SD and PD](plot_features.html)\
-2. [Ligand-receptor analysis](plot_cellchat.html)\
+2. [Ligand-receptor analysis for CR/SD and PD](plot_cellchat.html)\
+3. [Analyzing immune lineages by TGFb status](analyze_compartments.html)\
 
 
 ### To do
