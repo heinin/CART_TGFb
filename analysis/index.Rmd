@@ -20,7 +20,8 @@ This workflowr project contains the single-cell RNA-seq analysis of GBM tumors.
 ### To do
 
 - GSEA for gene set signatures\
-- Differential enrichment of gene sets between PD and CR/SD\
+- Differential enrichment of gene sets between TGFb high and low\
+- TGFb from TF (C1, D0), continuous variable analysis\
 
 ### Contact
 
