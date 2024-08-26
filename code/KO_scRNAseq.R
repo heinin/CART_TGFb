@@ -362,3 +362,43 @@ DimPlot(integrated_seurat,
   coord_fixed(1)
 
 table(integrated_seurat$Sample)
+
+# Reads mapping to the construct
+# The name of the construct is "IL13OP"
+integrated_seurat <- JoinLayers(integrated_seurat, assay = "RNA")
+layer_data_RNA <- LayerData(integrated_seurat,
+                            assay = "RNA",
+                            layer = "counts")
+layer_data_RNA <- as.data.frame(t(layer_data_RNA))
+
+range(layer_data_RNA[,"IL13OP"])
+range(layer_data_RNA)
+
+p1 <- layer_data_RNA %>% ggplot(aes(x = IL13OP)) +
+  geom_histogram() +
+  theme_classic()
+
+p2 <- layer_data_RNA %>% ggplot(aes(x = log2(IL13OP))) +
+  geom_histogram() +
+  theme_classic()
+
+p1 + p2
+
+# What % of the library mapped to the construct?
+layer_data_RNA %>%
+  dplyr::mutate(sum = rowSums(across(1:(ncol(layer_data_RNA))))) %>%
+  dplyr::summarise(CAR_counts = sum(IL13OP),
+                   lib_size = sum(sum),
+                   pct_CAR = (CAR_counts/lib_size)*100) %>%
+  ungroup()
+
+layer_data_sum <- layer_data_RNA %>%
+  dplyr::mutate(sum = rowSums(across(1:(ncol(layer_data_RNA)))))
+
+layer_data_sum[1:10, (ncol(layer_data_sum)-10):ncol(layer_data_sum)]
+
+# What % of cells reach a threshold for CAR reads?
+nrow(layer_data_RNA)
+layer_data_RNA %>% filter(`IL13OP` >= 1) %>% nrow()
+layer_data_RNA %>% filter(`IL13OP` >= 2) %>% nrow()
+layer_data_RNA %>% filter(`IL13OP` >= 3) %>% nrow()

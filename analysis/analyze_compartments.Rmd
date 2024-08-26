@@ -10,7 +10,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-## Comparative analysis of immune lineages between TGFb high/low
+## Reclustering compartments and comparative analysis of immune lineages between TGFb high/low
 
 ### Libraries, helper functions, and environment variables
 
@@ -62,7 +62,6 @@ recluster_seurat <- function(seurat_object){
   
   return(seurat_object)
 }
-
 
 ```
 
@@ -119,6 +118,8 @@ FeaturePlot(tumors,
 
 immune_robyn <- readRDS("/scratch/hnatri/CART/fromRobyn/IMMUNEminus618_TGFbELISA+TGFbELISA2.rds")
 #tumor_robyn <- readRDS("/scratch/hnatri/CART/fromRobyn/TumorPLUS_29+0.5.rds")
+
+head(immune_robyn@meta.data)
 
 # Adding TGFb status to the annotated data
 tgfb_status <- immune_robyn@meta.data %>%
@@ -351,12 +352,7 @@ perm_plot + scale_colour_manual(values = c("tomato", "azure2")) + NoLegend()
 
 ```
 
-### Cell type proportions between TGFb high and low
-```{r, message = F, warning = F, fig.width = 4, fig.height = 3}
 
-
-
-```
 
 
 

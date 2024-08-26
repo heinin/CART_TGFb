@@ -1,0 +1,379 @@
+---
+title: "comparative_analysis_TGFbhigh_vs_low"
+author: "heinin"
+date: "2024-08-23"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+  html_notebook: default
+editor_options:
+  chunk_output_type: console
+---
+
+## Comparative analysis of immune lineages between TGFb high/low
+
+### Libraries, helper functions, and environment variables
+
+```{r, message = F, warning = F}
+
+library(workflowr)
+library(Seurat)
+library(googlesheets4)
+library(dplyr)
+library(tidyverse)
+library(ggrepel)
+library(patchwork)
+library(scProportionTest)
+library(escape)
+
+source("/home/hnatri/CART_TGFb/code/CART_plot_functions.R")
+source("/home/hnatri/CART_TGFb/code/13384_tumor_ms_themes.R")
+source("/home/hnatri/CART_TGFb/code/utilities.R")
+
+setwd("/home/hnatri/CART_TGFb/")
+
+set.seed(1234)
+options(future.globals.maxSize = 30000 * 1024^2)
+reduction <- "umap"
+
+```
+
+### Import data
+```{r, message = F, warning = F, fig.width = 4, fig.height = 3}
+
+immune_seurat <- readRDS("/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/immune_reclustered_TGFb.rds")
+tumor_seurat <- readRDS("/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/tumor_reclustered_TGFb.rds")
+
+DimPlot(immune_seurat,
+        group.by = "celltype",
+        cols = immune_fibro_celltype_col,
+        reduction = reduction,
+        label = T,
+        label.box = T,
+        label.size = 3,
+        repel = T,
+        raster = T,
+        raster.dpi = c(1024, 1024),
+        pt.size = 3) +
+  ggtitle("") +
+  theme_classic() +
+  NoLegend() +
+  NoAxes() +
+  coord_fixed(1)
+
+DimPlot(tumor_seurat,
+        group.by = "celltype",
+        cols = tumor_celltype_col,
+        reduction = "umap",
+        label = T,
+        label.box = T,
+        label.size = 3,
+        repel = T,
+        raster = T,
+        raster.dpi = c(1024, 1024),
+        pt.size = 3) +
+  ggtitle("") +
+  theme_classic() +
+  NoLegend() +
+  NoAxes() +
+  coord_fixed(1)
+
+```
+
+```{r, message = F, warning = F, fig.width = 4, fig.height = 3}
+
+rownames(tumor_seurat)[grepl("^TGF", rownames(tumor_seurat))]
+
+VlnPlot(tumor_seurat, group.by = "TGFbELISA2",
+        features = rownames(tumor_seurat)[grepl("^TGF", rownames(tumor_seurat))],
+        ncol = 4,
+        slot = "counts")
+
+# Correlation between measurements and mRNA level
+tgfb_elisa <- read.table("/home/hnatri/CART_TGFb/data/ELISA1_TGFb.tsv", sep = "\t", header = T)
+tumor_seurat$log10TGFb <- mapvalues(x = tumor_seurat$UPN,
+                                    from = tgfb_elisa$UPN,
+                                    to = tgfb_elisa$log10TGFb)
+
+layer_data_RNA <- LayerData(tumor_seurat,
+                            assay = "RNA",
+                            layer = "counts")
+layer_data_RNA <- as.data.frame(t(as.matrix(layer_data_RNA)))
+
+layer_data_RNA[1:10, 1:10]
+
+gene_list <- c(rownames(tumor_seurat)[grepl("^TGF", rownames(tumor_seurat))],
+               "SMAD2", "SMAD3", "SMAD4")
+layer_data_RNA <- layer_data_RNA[, gene_list]
+
+identical(rownames(layer_data_RNA), colnames(tumor_seurat))
+
+layer_data_RNA$log10TGFb <- tumor_seurat$log10TGFb
+layer_data_RNA$UPN <- tumor_seurat$UPN
+layer_data_RNA$TGFbELISA2 <- tumor_seurat$TGFbELISA2
+layer_data_RNA_filtered <- layer_data_RNA %>% filter(UPN %in% tgfb_elisa$UPN)
+
+head(layer_data_RNA_filtered)
+
+layer_data_RNA_filtered %>% ggplot(aes(x = as.numeric(log10TGFb), y = TGFB2, color = TGFbELISA2)) +
+  geom_point() +
+  theme_bw()
+
+layer_data_RNA_filtered %>% ggplot(aes(x = as.numeric(log10TGFb), y = log2(TGFB2), color = TGFbELISA2)) +
+  geom_point() +
+  theme_bw()
+
+layer_data_RNA_filtered %>% ggplot(aes(x = as.numeric(log10TGFb), y = TGFBI, color = TGFbELISA2)) +
+  geom_point() +
+  theme_bw()
+
+layer_data_RNA_filtered %>% ggplot(aes(x = as.numeric(log10TGFb), y = log2(TGFBI), color = TGFbELISA2)) +
+  geom_point() +
+  theme_bw()
+
+```
+
+### Cell type markers for the immune subset
+```{r, message = F, warning = F, fig.width = 10, fig.height = 12}
+
+DefaultAssay(immune_seurat) <- "RNA"
+
+# Dropping MT and RP genes before calling markers
+RBMTgenes <- grep(pattern = "^RP[SL]|^MRP[SL]|^MT-",
+                  x = rownames(immune_seurat@assays$RNA@data),
+                  value = TRUE, invert = TRUE)
+immune_seurat <- subset(immune_seurat, features = RBMTgenes)
+
+# Top markers for each cluster
+markers <- presto::wilcoxauc(immune_seurat,
+                             group_by = "celltype",
+                             assay = "data",
+                             seurat_assay = "RNA")
+
+top_markers <- markers %>% group_by(group) %>% slice_max(order_by = auc, n = 2)
+
+FeaturePlot(immune_seurat,
+            features = top_markers$feature,
+            ncol = 6,
+            reduction = "umap",
+            raster = T,
+            cols = c("gray89", "tomato3")) &
+  coord_fixed(ratio = 1) &
+  theme_bw() &
+  NoLegend() &
+  manuscript_theme
+
+```
+
+```{r, fig.width=12, fig.height=10}
+
+top_markers <- markers %>%  group_by(group) %>% slice_max(order_by = auc, n = 5)
+
+# seurat_object, plot_features, group_var, group_colors, column_title, km=5, row.order = NULL
+create_dotplot_heatmap_horizontal(seurat_object = immune_seurat,
+                                  plot_features = unique(top_markers$feature),
+                                  group_var = "celltype",
+                                  group_colors = immune_fibro_celltype_col,
+                                  column_title = "",
+                                  km = 5,
+                                  col.order = NULL)
+
+```
+
+### Differential gene expression
+```{r, message = F, warning = F, fig.width = 4, fig.height = 3}
+
+unique(immune_seurat$TGFbELISA2)
+
+# For each cluster, top DEGs between TGFb high and low
+DEG_TGFb <- lapply(unique(immune_seurat$celltype), function(xx){
+  data_subset <- subset(immune_seurat, subset = celltype == xx)
+  Idents(data_subset) <- data_subset$TGFbELISA2
+  if (all((c("HighTGFb", "LowTGFb") %in% data_subset$TGFbELISA2) == c(T, T))){
+    markers <- FindMarkers(data_subset,
+                           ident.1 = "HighTGFb",
+                           ident.2 = "LowTGFb",
+                           assay = "RNA",
+                           verbose = F)
+    markers$feature <- rownames(markers)
+    markers$celltype <- xx
+    
+    return(markers)
+  } else {
+    return(NULL)
+  }
+})
+names(DEG_TGFb) <- unique(immune_seurat$celltype)
+DEG_TGFb[sapply(DEG_TGFb, is.null)] <- NULL
+
+DEG_TGFb_df <- as.data.frame(do.call(rbind, DEG_TGFb))
+
+# Distribution of p-values and log2FC
+hist(DEG_TGFb_df$p_val)
+hist(DEG_TGFb_df$avg_log2FC)
+
+DEG_TGFb_df_sig <- DEG_TGFb_df %>%
+  filter(p_val < 0.01,
+         abs(avg_log2FC) > 2,
+         (pct.1 > 0.50 | pct.2 > 0.50))
+
+dim(DEG_TGFb_df_sig)
+
+# Saving to a file
+write.table(DEG_TGFb_df_sig,
+            "/scratch/hnatri/CART/TGFb_high_vs_low_DEGs_immune_sig.tsv",
+            sep = "\t", quote = F, row.names = F)
+
+# Plotting
+table(DEG_TGFb_df_sig$celltype) %>% as.data.frame() %>%
+  ggplot(aes(x = reorder(Var1, -Freq), y = Freq, fill = Var1)) +
+    geom_bar(stat = "identity") +
+    scale_fill_manual(values = immune_fibro_celltype_col) +
+    theme_classic() +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+    NoLegend() +
+    xlab("Cell type") +
+    ylab("# DEGs, TGFb high vs. low")
+
+```
+
+### Pathways enrichment
+```{r, message = F, warning = F, fig.width = 4, fig.height = 3}
+
+# Adding HALLMARK pathways from another object
+immune_fibro_hallmark <- readRDS("/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/13384_immune_fibro_GSEA_C2_H.rds")
+colnames(immune_fibro_hallmark@meta.data)[grep("HALLMARK", colnames(immune_fibro_hallmark@meta.data))]
+
+for(i in colnames(immune_fibro_hallmark@meta.data)[grep("HALLMARK", colnames(immune_fibro_hallmark@meta.data))]){
+  immune_seurat@meta.data[,i] <- mapvalues(x = rownames(immune_seurat@meta.data),
+                                           from = rownames(immune_fibro_hallmark@meta.data),
+                                           to = immune_fibro_hallmark@meta.data[,i])
+}
+
+rm(immune_fibro_hallmark)
+colnames(immune_seurat@meta.data)[grep("HALLMARK", colnames(immune_seurat@meta.data))]
+
+# Pathway names
+pathway_names <- c(colnames(immune_seurat@meta.data)[grep("REACTOME", colnames(immune_seurat@meta.data))],
+                   colnames(immune_seurat@meta.data)[grep("KEGG", colnames(immune_seurat@meta.data))],
+                   colnames(immune_seurat@meta.data)[grep("BIOCARTA", colnames(immune_seurat@meta.data))],
+                   colnames(immune_seurat@meta.data)[grep("HALLMARK", colnames(immune_seurat@meta.data))])
+
+table(sapply(strsplit(pathway_names, split='_', fixed=TRUE), `[`, 1))
+
+# Plotting
+gsea_res <- immune_seurat@meta.data %>%
+  dplyr::select(all_of(c("TGFbELISA2", pathway_names)))
+
+gsea_res[1:10, 1:10]
+
+#myeloid_res2$binary_response <- factor(myeloid_res2$binary_response, levels = c("CR_SD", "PD"))
+gsea_res <- gsea_res %>% filter(TGFbELISA2 %in% c("HighTGFb", "LowTGFb"))
+output_immune <- data.frame(getSignificance(gsea_res, group = "TGFbELISA2", fit = "Wilcoxon"))
+output_immune$pathways <- rownames(output_immune)
+output_immune <- output_immune %>% filter(FDR < 0.01) %>% arrange(FDR)
+
+#output_immune %>% filter(FDR < 0.01) %>% head()
+
+dim(output_immune)
+output_immune$pathways[grep("TGF", output_immune$pathways)]
+
+head(output_immune)
+
+VlnPlot(immune_seurat,
+        group.by = "TGFbELISA2",
+        features = c("REACTOME_SIGNALING_BY_TGFB_FAMILY_MEMBERS"),
+        pt.size = 0)
+
+```
+
+```{r, message = F, warning = F, fig.width = 8, fig.height = 8}
+# Plotting TGFb pathways
+output_immune_tgf <- output_immune %>% filter(pathways %in% output_immune$pathways[grep("TGF", output_immune$pathways)])
+
+output_immune_tgf %>%
+  mutate(delta = median.HighTGFb - median.LowTGFb,
+         sign = sign(delta),
+         signstr = if_else(sign == 1, "HighTGFb", "LowTGFb")) %>%
+  ggplot(aes(x = delta, y = reorder(pathways, delta), fill = signstr)) +
+    geom_bar(stat = "identity") +
+    #geom_col(width = 0.85) +
+    scale_fill_manual(values = c("orangered1", "royalblue3")) +
+    theme_classic() +
+    manuscript_theme +
+    ylab("") +
+    xlab(expression(Delta ~ "median enrichment score"))
+    #coord_flip()
+
+# Selecting a subset of pathways for plotting
+output_immune_plot <- output_immune %>% head(n=20)
+
+output_immune_plot %>%
+  mutate(delta = median.HighTGFb - median.LowTGFb,
+         sign = sign(delta),
+         signstr = if_else(sign == 1, "HighTGFb", "LowTGFb")) %>%
+  ggplot(aes(x = delta, y = reorder(pathways, delta), fill = signstr)) +
+    geom_bar(stat = "identity") +
+    #geom_col(width = 0.85) +
+    scale_fill_manual(values = c("orangered1", "royalblue3")) +
+    theme_classic() +
+    manuscript_theme +
+    ylab("") +
+    xlab(expression(Delta ~ "median enrichment score"))
+    #coord_flip()
+
+write.table(output_immune, "/scratch/hnatri/CART/TGFb_high_vs_low_GSEA_sig.tsv",
+            quote = F, row.names = F, sep = "\t")
+
+# Myeloid celltypes only
+myeloid <- subset(immune_seurat, subset = celltype %in% c(paste0("M", seq(1, 9)), "B1", "N1"))
+gsea_res_myeloid <- myeloid@meta.data %>%
+  dplyr::select(c("orig.ident", "TGFbELISA2", pathway_names))
+
+gsea_res_myeloid <- gsea_res_myeloid %>% filter(TGFbELISA2 %in% c("HighTGFb", "LowTGFb"))
+output_myeloid <- data.frame(getSignificance(gsea_res_myeloid, group = "TGFbELISA2", fit = "Wilcoxon"))
+output_myeloid$pathways <- rownames(output_myeloid)
+output_myeloid <- output_myeloid %>% filter(FDR < 0.01) %>% arrange(FDR)
+
+dim(output_myeloid)
+
+output_myeloid$pathways[grep("INTERFERON", output_myeloid$pathways)]
+
+TGFbhigh_enrichment <- myeloid@meta.data %>% filter(TGFbELISA2 == "HighTGFb") %>%
+  dplyr::select(REACTOME_INTERFERON_GAMMA_SIGNALING) %>% unlist() %>% as.numeric()
+TGFblow_enrichment <- myeloid@meta.data %>% filter(TGFbELISA2 == "LowTGFb") %>%
+  dplyr::select(REACTOME_INTERFERON_GAMMA_SIGNALING) %>% unlist() %>% as.numeric()
+
+summary(TGFbhigh_enrichment)
+summary(TGFblow_enrichment)
+
+t.test(TGFbhigh_enrichment, TGFblow_enrichment)
+
+output_myeloid[which(output_myeloid$pathways == "REACTOME_INTERLEUKIN_27_SIGNALING"),]
+output_myeloid[which(output_myeloid$pathways == "REACTOME_INTERFERON_GAMMA_SIGNALING"),]
+
+VlnPlot(myeloid,
+        features = "REACTOME_INTERFERON_GAMMA_SIGNALING",
+        group.by = "TGFbELISA2",
+        pt.size = 0)
+
+# Selecting a subset of pathways for plotting
+output_plot_myeloid <- output_myeloid %>% head(n=60)
+
+output_plot_myeloid %>%
+  mutate(delta = median.HighTGFb - median.LowTGFb,
+         sign = sign(delta),
+         signstr = if_else(sign == 1, "HighTGFb", "LowTGFb")) %>%
+  ggplot(aes(x = delta, y = reorder(pathways, delta), fill = signstr)) +
+    geom_bar(stat = "identity") +
+    #geom_col(width = 0.85) +
+    scale_fill_manual(values = c("orangered1", "royalblue3")) +
+    theme_classic() +
+    manuscript_theme +
+    ylab("") +
+    xlab(expression(Delta ~ "median enrichment score"))
+    #coord_flip()
+
+```
+
+
