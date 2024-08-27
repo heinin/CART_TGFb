@@ -251,6 +251,8 @@ for(i in colnames(immune_fibro_hallmark@meta.data)[grep("HALLMARK", colnames(imm
 }
 
 rm(immune_fibro_hallmark)
+
+saveRDS(immune_seurat, "/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/13384_immune_GSEA_C2_H.rds")
 colnames(immune_seurat@meta.data)[grep("HALLMARK", colnames(immune_seurat@meta.data))]
 
 # Pathway names

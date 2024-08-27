@@ -73,6 +73,7 @@ table(seurat_data_list[[2]]$Sample_Name)
 
 # Merging for plotting
 seurat_data_merged <- merge(seurat_data_list[[1]], seurat_data_list[[2]])
+seurat_data_merged <- JoinLayers(seurat_data_merged, assay = "RNA")
 
 table(seurat_data_merged$Sample_Name) %>% as.data.frame() %>%
   ggplot(aes(x = Var1, y = Freq)) +
@@ -142,6 +143,8 @@ layer_data %>%
                    lib_size = sum(sum),
                    pct_CAR = (CAR_counts/lib_size)*100) %>%
   ungroup()
+
+# Inspecting CAR enrichment libraries only
 
 #==============================================================================
 # Filtering, SoupX, integration, dimensionality reduction, and clustering
