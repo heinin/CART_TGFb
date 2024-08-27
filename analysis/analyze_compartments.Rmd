@@ -147,7 +147,7 @@ tumors$TGFbELISA2 <- mapvalues(x = tumors$UPN,
 ```
 
 ### Splitting and reclustering
-```{r, message = F, warning = F, eval = F}
+```{r, message = F, warning = F, eval = T}
 
 # Immune clusters
 immune_seurat <- subset(immune_fibro, subset = celltype %in% c(paste0("M", seq(1, 9)),
@@ -321,14 +321,14 @@ DimPlot(immune_seurat,
   NoAxes() +
   coord_fixed(1)
 
-# TGFbELISA2
-table(immune_seurat$TGFbELISA2)
-immune_seurat_tgfb <- subset(immune_seurat, subset = TGFbELISA2 %in% c("HighTGFb", "LowTGFb"))
+# TGFbELISA
+table(immune_seurat$TGFbELISA)
+immune_seurat_tgfb <- subset(immune_seurat, subset = TGFbELISA %in% c("HighTGFb", "LowTGFb"))
 
-table(immune_seurat_tgfb$TGFbELISA2, immune_seurat_tgfb$celltype)
+table(immune_seurat_tgfb$TGFbELISA, immune_seurat_tgfb$celltype)
 
 create_clusterpropplot(seurat_object = immune_seurat_tgfb,
-                       group_var = "TGFbELISA2",
+                       group_var = "TGFbELISA",
                        group2 = "HighTGFb",
                        group1 = "LowTGFb",
                        plot_var = "celltype",
@@ -343,7 +343,7 @@ prop_test <- sc_utils(immune_seurat_tgfb)
 prop_test <- permutation_test(
   prop_test, cluster_identity = "celltype",
   sample_1 = "HighTGFb", sample_2 = "LowTGFb",
-  sample_identity = "TGFbELISA2")
+  sample_identity = "TGFbELISA")
 
 # HighTGFb gets negative values
 perm_plot <- permutation_plot(prop_test)

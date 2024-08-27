@@ -44,9 +44,48 @@ reduction <- "umap"
 immune_seurat <- readRDS("/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/immune_reclustered_TGFb.rds")
 tumor_seurat <- readRDS("/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/tumor_reclustered_TGFb.rds")
 
+# Adding skull cluster numbers
+immune_robyn <- readRDS("/scratch/hnatri/CART/fromRobyn/IMMUNEminus618_TGFbELISA+TGFbELISA2.rds")
+
+DimPlot(immune_robyn, group.by = "seurat_clusters", label = T)
+
+length(intersect(colnames(immune_seurat), colnames(immune_robyn)))
+length(setdiff(colnames(immune_seurat), colnames(immune_robyn)))
+head(immune_robyn@meta.data)
+table(immune_robyn$seurat_clusters)
+
+immune_robyn$seurat_clusters <- as.character(immune_robyn$seurat_clusters)
+
+immune_seurat$skull_cluster <- mapvalues(x = colnames(immune_seurat),
+                                         from = colnames(immune_robyn),
+                                         to = immune_robyn$seurat_clusters)
+
+head(table(immune_seurat$skull_cluster), n = 20)
+table(immune_seurat$skull_cluster)["0"]
+
+immune_seurat$skull_cluster <- ifelse(colnames(immune_seurat) %in% colnames(immune_robyn), immune_seurat$skull_cluster, NA)
+
+# Plotting cell type annotations
 DimPlot(immune_seurat,
         group.by = "celltype",
         cols = immune_fibro_celltype_col,
+        reduction = reduction,
+        label = T,
+        label.box = T,
+        label.size = 3,
+        repel = T,
+        raster = T,
+        raster.dpi = c(1024, 1024),
+        pt.size = 3) +
+  ggtitle("") +
+  theme_classic() +
+  NoLegend() +
+  NoAxes() +
+  coord_fixed(1)
+
+DimPlot(immune_seurat,
+        group.by = "skull_cluster",
+        #cols = immune_fibro_celltype_col,
         reduction = reduction,
         label = T,
         label.box = T,
@@ -252,7 +291,22 @@ for(i in colnames(immune_fibro_hallmark@meta.data)[grep("HALLMARK", colnames(imm
 
 rm(immune_fibro_hallmark)
 
-saveRDS(immune_seurat, "/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/13384_immune_GSEA_C2_H.rds")
+tumors_hallmark <- readRDS("/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/13384_tumors_GSEA_C2_H.rds")
+colnames(tumors_hallmark@meta.data)[grep("HALLMARK", colnames(tumors_hallmark@meta.data))]
+
+for(i in colnames(tumors_hallmark@meta.data)[grep("HALLMARK", colnames(tumors_hallmark@meta.data))]){
+  tumor_seurat@meta.data[,i] <- mapvalues(x = rownames(tumor_seurat@meta.data),
+                                          from = rownames(tumors_hallmark@meta.data),
+                                          to = tumors_hallmark@meta.data[,i])
+}
+
+rm(tumors_hallmark)
+
+#saveRDS(immune_seurat, "/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/13384_immune_GSEA_C2_H.rds")
+#saveRDS(tumor_seurat, "/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/13384_tumor_GSEA_C2_H.rds")
+immune_seurat <- readRDS("/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/13384_immune_GSEA_C2_H.rds")
+tumor_seurat <- readRDS("/tgen_labs/banovich/BCTCSF/Heini/13384_Tumor/13384_tumor_GSEA_C2_H.rds")
+
 colnames(immune_seurat@meta.data)[grep("HALLMARK", colnames(immune_seurat@meta.data))]
 
 # Pathway names
@@ -263,24 +317,14 @@ pathway_names <- c(colnames(immune_seurat@meta.data)[grep("REACTOME", colnames(i
 
 table(sapply(strsplit(pathway_names, split='_', fixed=TRUE), `[`, 1))
 
-# Plotting
+# Plotting results for all immune cells
 gsea_res <- immune_seurat@meta.data %>%
   dplyr::select(all_of(c("TGFbELISA2", pathway_names)))
 
-gsea_res[1:10, 1:10]
-
-#myeloid_res2$binary_response <- factor(myeloid_res2$binary_response, levels = c("CR_SD", "PD"))
 gsea_res <- gsea_res %>% filter(TGFbELISA2 %in% c("HighTGFb", "LowTGFb"))
 output_immune <- data.frame(getSignificance(gsea_res, group = "TGFbELISA2", fit = "Wilcoxon"))
 output_immune$pathways <- rownames(output_immune)
 output_immune <- output_immune %>% filter(FDR < 0.01) %>% arrange(FDR)
-
-#output_immune %>% filter(FDR < 0.01) %>% head()
-
-dim(output_immune)
-output_immune$pathways[grep("TGF", output_immune$pathways)]
-
-head(output_immune)
 
 VlnPlot(immune_seurat,
         group.by = "TGFbELISA2",
@@ -288,6 +332,8 @@ VlnPlot(immune_seurat,
         pt.size = 0)
 
 ```
+
+Plotting TGFb pathways in all immune cells
 
 ```{r, message = F, warning = F, fig.width = 8, fig.height = 8}
 # Plotting TGFb pathways
@@ -326,6 +372,11 @@ output_immune_plot %>%
 
 write.table(output_immune, "/scratch/hnatri/CART/TGFb_high_vs_low_GSEA_sig.tsv",
             quote = F, row.names = F, sep = "\t")
+```
+
+Myeloid only GSEA
+
+```{r, message = F, warning = F, fig.width = 8, fig.height = 8}
 
 # Myeloid celltypes only
 myeloid <- subset(immune_seurat, subset = celltype %in% c(paste0("M", seq(1, 9)), "B1", "N1"))
@@ -337,7 +388,8 @@ output_myeloid <- data.frame(getSignificance(gsea_res_myeloid, group = "TGFbELIS
 output_myeloid$pathways <- rownames(output_myeloid)
 output_myeloid <- output_myeloid %>% filter(FDR < 0.01) %>% arrange(FDR)
 
-dim(output_myeloid)
+write.table(output_myeloid, "/scratch/hnatri/CART/TGFb_high_vs_low_myeloid_GSEA_sig.tsv",
+            quote = F, row.names = F, sep = "\t")
 
 output_myeloid$pathways[grep("INTERFERON", output_myeloid$pathways)]
 
@@ -378,4 +430,10 @@ output_plot_myeloid %>%
 
 ```
 
+Lymphoid only GSEA
+
+```{r, message = F, warning = F, fig.width = 8, fig.height = 8}
+
+
+```
 
